@@ -1,5 +1,4 @@
-"""
-This file is for code related to rolling dice.
+"""This file is for code related to rolling dice.
 
 It uses Python's random module to pseudo-randomly get rolls.
 It has support for any type of die any number of times. eg. d20, 2d10
@@ -10,28 +9,21 @@ import random
 import re
 
 
-def roll_stats(die, roll, count):
-    """Checks the roll against the criteria and then formats it for Discord.
+# Wrapper for solve_rolls
+def roll(expression):
+    """Converts a expression with dice rolls into a signle number.
 
     Args:
-        die (str): the dice to roll
-        roll (int): what the die rolled
-        count (int): previous number of maximum and mimimum rolls
+        expression (str): the expression with dice rolls
 
     Returns:
-        int: the result formatted for Discord
-        list: number of maximum and minimum rolls
+        dict: data about dice rolls
     """
-    if roll == int(die):
-        count[0] += 1
-    if roll == 1:
-        count[1] += 1
+    math_expression, result_data = solve_rolls(expression)
 
-    if roll == int(die):
-        roll = "**" + str(roll) + "**"
-    else:
-        roll = str(roll)
-    return roll, count
+    if not math_expression.isalpha():
+        result_data["result"] = eval(math_expression)
+        return result_data
 
 
 def dice(die):
@@ -41,26 +33,21 @@ def dice(die):
         die (str): the dice to roll
 
     Returns:
-        str: result from dice rolls
-        list: data about dice rolls
+        dict: data about dice rolls
     """
-    result = 0
-    rolls = []
-    count = [0, 0]
+
+    result_data = {"result": 0, "rolls": [], "maximums": 0, "minimums": 0}
 
     if die[0] == "d":
-        result = random.randint(1, int(die[1:]))
-        roll, count = roll_stats(die[1:], result, count)
-        rolls.append(roll)
+        result_data["result"] = random.randint(1, int(die[1:]))
+        result_data = roll_stats(die[1:], result_data)
     else:
         die = die.split("d")
         for i in range(0, int(die[0])):
-            roll = random.randint(1, int(die[1]))
-            result += roll
-            roll, count = roll_stats(die[1], roll, count)
-            rolls.append(roll)
+            result_data["result"] = random.randint(1, int(die[1]))
+            result_data = roll_stats(die[1:], result_data)
 
-    return str(result), [rolls, count]
+    return result_data
 
 
 def solve_rolls(expression):
@@ -71,38 +58,48 @@ def solve_rolls(expression):
 
     Returns:
         str: mathematical expression
-        list: data about dice rolls
+        dict: data about dice rolls
     """
 
-    count = [[], 0, 0]
+    result_data = {"result": 0, "rolls": [], "maximums": 0, "minimums": 0}
 
+    # Splits string along: +, -, *, (, )
     string_list = re.split("(\\+|\\-|\\*|\\(|\\))", expression)
 
     for i in range(0, len(string_list)):
         if "d" in string_list[i]:
-            string_list[i], old_count = dice(string_list[i])
-            count[0].extend(old_count[0])
-            count[1] += old_count[1][0]
-            count[2] += old_count[1][1]
+            old_result_data = dice(string_list[i])
+            string_list[i] = str(old_result_data["result"])
+            result_data["rolls"].extend(old_result_data["rolls"])
+            result_data["maximums"] += old_result_data["maximums"]
+            result_data["minimums"] += old_result_data["minimums"]
+
+        # Adds "*" before each "("
         if string_list[i] == "(" and string_list[i - 1][-1:].isdigit():
             string_list[i] = "*" + string_list[i]
 
     expression = "".join(string_list)
 
-    return expression, count
+    return expression, result_data
 
 
-def roll(expression):
-    """Converts a expression with dice rolls into a signle number.
+# Checks if the result is the maximum or the minimum
+def roll_stats(die, result_data):
+    """Checks the roll against the criteria and then formats it for Discord.
 
     Args:
-        expression (str): the expression with dice rolls
+        die (str): the dice that was rolled
+        result_data (dict): data about dice rolls
 
     Returns:
-        int: solution to expression as one number
-        list: data about dice rolls
+        dict: data about dice rolls
     """
-    math_expression, count = solve_rolls(expression)
+    if result_data["result"] == int(die):
+        result_data["maximums"] += 1
+        result_data["rolls"].append(f"**{result_data['result']}**")
+    else:
+        if result_data["result"] == 1:
+            result_data["minimums"] += 1
+        result_data["rolls"].append(f"{result_data['result']}")
 
-    if not math_expression.isalpha():
-        return eval(math_expression), count
+    return result_data
