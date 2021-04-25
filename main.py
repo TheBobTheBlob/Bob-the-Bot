@@ -10,8 +10,8 @@ import re
 import discord
 
 from scripts import responses
-from scripts import dice
-from scripts import coin
+from scripts import random_cmds
+from scripts import help_cmds
 
 prefix = "$"
 client = discord.Client()
@@ -40,24 +40,40 @@ async def on_message(message):
     content = content[1:]
 
     # help command
-    if content == "help":
-        await message.channel.send(embed=responses.help(message.author, prefix))
+    if content.startswith("help"):
+        if content == "help":
+            await message.channel.send(embed=help_cmds.bot(message.author, prefix))
+        else:
+            content = content.split()
+            if len(content) == 2:
+                await message.channel.send(
+                    embed=help_cmds.command(content[1], message.author, prefix)
+                )
 
     # roll command
     elif content.startswith("r"):
         # Removes "roll", "r" and any spaces
         expression = re.sub("(\\s|(roll)|[r])", "", content)
 
-        if content.isdecimal():
+        if expression.isdecimal():
             expression = "d" + expression
 
-        result_data = dice.roll(expression)
+        result_data = random_cmds.roll(expression)
         roll_response = responses.roll(message.author, expression, result_data)
         await message.channel.send(embed=roll_response)
 
+    # coin command
     elif content == "coin":
-        result, art = coin.flip()
+        result, art = random_cmds.coin()
         await message.channel.send(embed=responses.coin(message.author, result, art))
+
+    # 8ball command
+    elif content.startswith("8ball"):
+        question = " ".join(message.content.strip().split()[1:])
+        result = random_cmds.eightball()
+        await message.channel.send(
+            embed=responses.eightball(message.author, question, result)
+        )
 
     # twenty command
     elif content == "twenty":

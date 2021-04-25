@@ -46,70 +46,6 @@ nat_20 = [
 ]
 
 
-def nat_1_response():
-    """Gets a random string from nat_1 and returns it.
-
-    Returns:
-        str: item from nat_1
-    """
-    return nat_1[random.randint(1, len(nat_1)) - 1]
-
-
-def nat_20_response():
-    """Gets a random string from nat_20 and returns it.
-
-    Returns:
-        str: item from nat_20
-    """
-    return nat_20[random.randint(1, len(nat_20)) - 1]
-
-
-def help(author, prefix):
-    """Returns the embed help message
-
-    Args:
-        prefix (str): the prefix for all commands
-        author (obj): Discord author object
-
-    Returns:
-        obj: an Discord embed object
-    """
-    embed = discord.Embed(
-        title="Bob the Bot | Help",
-        description=f"Prefix: `{prefix}`",
-        color=embed_colour,
-    )
-
-    embed.add_field(
-        name=":game_die: Dice",
-        value="Rolls a die/dice expression.\n`roll` `r`",
-        inline=True,
-    )
-    embed.add_field(
-        name=":coin: Coin Flips",
-        value="Flips a coin.\n`coin`",
-        inline=True,
-    )
-    embed.add_field(
-        name=":tada: Party",
-        value="[WIP] Configure your D&D party.\n`party` then: `create` `delete` `add` `remove` `nick`",
-        inline=False,
-    )
-    embed.add_field(
-        name=":joystick: Other",
-        value="All other commmands\n`twenty` `one`",
-        inline=False,
-    )
-    embed.add_field(
-        name=":gear: Config",
-        value="[WIP] Configure Bob the Bot.\n`config` then: `prefix` `timetable` `welcomemsg` `byemsg`",
-        inline=False,
-    )
-    embed.set_footer(text=f"Help command run by: {author.display_name}")
-
-    return embed
-
-
 def roll(author, expression, result_data):
     """Creates embed with parameters then returns it.
 
@@ -127,12 +63,12 @@ def roll(author, expression, result_data):
     result = f"**{result_data['result']}**"
 
     if expression == "d20" and result_data["result"] == 20:
-        result += f"\n{nat_20_response()}"
+        result += f"\n{random.choice(nat_20)}"
     elif expression == "d20" and result_data["result"] == 1:
-        result += f"\n{nat_1_response()}"
+        result += f"\n{random.choice(nat_1)}"
 
     embed = discord.Embed(
-        title=":game_die: Dice Expression Result",
+        title=":game_die: Dice Roll Result",
         color=embed_colour,
     )
     embed.set_author(name=author.display_name, icon_url=author.avatar_url)
@@ -166,6 +102,28 @@ def coin(author, result, art):
     embed.set_author(name=author.display_name, icon_url=author.avatar_url)
     embed.add_field(name=":star: Result", value=f"You got: **{result}**\n```{art}```")
     embed.set_footer(text=f"Coin command run by: {author.display_name}")
+
+    return embed
+
+
+def eightball(author, question, result):
+    embed = discord.Embed(title=":8ball: Magic 8-Ball", color=embed_colour)
+    embed.set_author(name=author.display_name, icon_url=author.avatar_url)
+    if len(question) > 0:
+        embed.add_field(
+            name=":question: Your Question", value=f"{question}", inline=False
+        )
+        embed.add_field(
+            name=":star: My Answer",
+            value=f"{result}",
+            inline=False,
+        )
+    else:
+        embed.add_field(
+            name=":exclamation: No Quesion Asked",
+            value="You need to ask me a question so I can use my infinite wisdom and answer it.",
+        )
+    embed.set_footer(text=f"8-Ball command run by: {author.display_name}")
 
     return embed
 

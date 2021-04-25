@@ -1,15 +1,14 @@
-"""This file is for code related to rolling dice.
+"""This file is for code related to python's random module.
 
-It uses Python's random module to pseudo-randomly get rolls.
-It has support for any type of die any number of times. eg. d20, 2d10
-Also has support for addition, subtraction, muliplication, and parentheses.
+It hosts the following commands: roll, coin, 8ball
 """
 
 import random
 import re
 
+# Code for dice rolls
 
-# Wrapper for solve_rolls
+
 def roll(expression):
     """Converts a expression with dice rolls into a signle number.
 
@@ -83,7 +82,6 @@ def solve_rolls(expression):
     return expression, result_data
 
 
-# Checks if the result is the maximum or the minimum
 def roll_stats(die, result_data):
     """Checks the roll against the criteria and then formats it for Discord.
 
@@ -103,3 +101,70 @@ def roll_stats(die, result_data):
         result_data["rolls"].append(f"{result_data['result']}")
 
     return result_data
+
+
+# Code for coin flips
+
+heads = """
+  ▄▄█▀▀▀▀▀█▄▄
+▄█▀         ▀█▄
+█    █   █    █
+█    █▀▀▀█    █
+█    █   █    █
+▀█▄         ▄█▀
+  ▀▀█▄▄▄▄▄█▀▀
+"""
+
+tails = """
+  ▄▄█▀▀▀▀▀█▄▄
+▄█▀         ▀█▄
+█   ▀▀▀█▀▀▀   █
+█      █      █
+█      █      █
+▀█▄         ▄█▀
+  ▀▀█▄▄▄▄▄█▀▀
+"""
+
+
+def coin():
+    """Flips a coin.
+
+    Returns:
+        str: result of coin flip
+        str: ascii art
+    """
+    coin = random.randint(1, 2)
+    if coin == 1:
+        return "Heads.", heads
+    else:
+        return "Tails.", tails
+
+
+# Code for 8-ball
+
+eightball_responses = [
+    "As I see it, yes.",
+    "Ask again later.",
+    "Better not tell you now.",
+    "Cannot predict now.",
+    "Concentrate and ask again.",
+    "Don’t count on it.",
+    "It is certain.",
+    "It is decidedly so.",
+    "Most likely.",
+    "My reply is no.",
+    "My sources say no.",
+    "Outlook not so good.",
+    "Outlook good.",
+    "Reply hazy, try again.",
+    "Signs point to yes.",
+    "Very doubtful.",
+    "Without a doubt.",
+    "Yes.",
+    "Yes – definitely.",
+    "You may rely on it.",
+]
+
+
+def eightball():
+    return random.choice(eightball_responses)
