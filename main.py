@@ -55,8 +55,10 @@ async def on_message(message):
         # Removes "roll", "r" and any spaces
         expression = re.sub("(\\s|(roll)|[r])", "", content)
 
+        # If just a number, changes it into a a dice
         if expression.isdecimal():
             expression = "d" + expression
+        expression = expression.replace("dice", "d").replace("binay", "b")
 
         result_data = random_cmds.roll(expression)
         roll_response = responses.roll(message.author, expression, result_data)

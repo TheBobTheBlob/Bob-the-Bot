@@ -10,7 +10,7 @@ import re
 
 
 def roll(expression):
-    """Converts a expression with dice rolls into a signle number.
+    """Acts as a singular function to call the
 
     Args:
         expression (str): the expression with dice rolls
@@ -18,89 +18,83 @@ def roll(expression):
     Returns:
         dict: data about dice rolls
     """
-    math_expression, result_data = solve_rolls(expression)
+    dice = Dice(expression)
+    math_expression, result_data = dice.solve()
 
     if not math_expression.isalpha():
         result_data["result"] = eval(math_expression)
         return result_data
 
 
-def dice(die):
-    """Rolls the die given. eg. d20, 2d10
+class Dice:
+    def __init__(self, expression):
+        self.expression = expression
+        self.roll = 0
+        self.total_roll = 0
+        self.data = {"rolls": [], "maximums": 0, "minimums": 0}
 
-    Args:
-        die (str): the dice to roll
+    def dice(self, die, minimum_value=1):
+        """Rolls the die given. eg. d20, 2d10
 
-    Returns:
-        dict: data about dice rolls
-    """
+        Args:
+            die (str): the dice to roll
 
-    result_data = {"result": 0, "rolls": [], "maximums": 0, "minimums": 0}
+        Returns:
+            dict: data about dice rolls
+        """
 
-    if die[0] == "d":
-        result_data["result"] = random.randint(1, int(die[1:]))
-        result_data = roll_stats(die[1:], result_data)
-    else:
-        die = die.split("d")
-        for i in range(0, int(die[0])):
-            result_data["result"] = random.randint(1, int(die[1]))
-            result_data = roll_stats(die[1:], result_data)
+        self.total_roll = 0
+        if die[0] == "d":
+            self.roll = random.randint(minimum_value, int(die[1:]))
+            self.stats(die[1:])
+            self.total_roll = self.roll
+        else:
+            die = die.split("d")
+            for i in range(0, int(die[0])):
+                self.roll = random.randint(minimum_value, int(die[1]))
+                self.total_roll += self.roll
+                self.stats(die[1])
 
-    return result_data
+    def solve(self):
+        """Converts an expression with dice rolls to a mathematical expression.
 
+        Returns:
+            str: mathematical expression
+            dict: data about dice rolls
+        """
 
-def solve_rolls(expression):
-    """Converts an expression with dice rolls to a mathematical expression.
+        # Splits string along: +, -, *, (, )
+        exp_list = re.split("(\\+|\\-|\\*|\\(|\\))", self.expression)
+        for i in range(0, len(exp_list)):
+            if "d" in exp_list[i]:
+                self.dice(exp_list[i])
+                exp_list[i] = str(self.total_roll)
 
-    Args:
-        expression (str): the expression with dice rolls
+            elif exp_list[i] == "b":
+                self.dice("d1", 0)
+                exp_list[i] = str(self.total_roll)
 
-    Returns:
-        str: mathematical expression
-        dict: data about dice rolls
-    """
+            # Adds "*" before each "("
+            if exp_list[i] == "(" and exp_list[i - 1][-1:].isdigit():
+                exp_list[i] = "*" + exp_list[i]
 
-    result_data = {"result": 0, "rolls": [], "maximums": 0, "minimums": 0}
+        math_expression = "".join(exp_list)
 
-    # Splits string along: +, -, *, (, )
-    string_list = re.split("(\\+|\\-|\\*|\\(|\\))", expression)
+        return math_expression, self.data
 
-    for i in range(0, len(string_list)):
-        if "d" in string_list[i]:
-            old_result_data = dice(string_list[i])
-            string_list[i] = str(old_result_data["result"])
-            result_data["rolls"].extend(old_result_data["rolls"])
-            result_data["maximums"] += old_result_data["maximums"]
-            result_data["minimums"] += old_result_data["minimums"]
+    def stats(self, die):
+        """Checks the roll against the criteria and then formats it for Discord.
 
-        # Adds "*" before each "("
-        if string_list[i] == "(" and string_list[i - 1][-1:].isdigit():
-            string_list[i] = "*" + string_list[i]
-
-    expression = "".join(string_list)
-
-    return expression, result_data
-
-
-def roll_stats(die, result_data):
-    """Checks the roll against the criteria and then formats it for Discord.
-
-    Args:
-        die (str): the dice that was rolled
-        result_data (dict): data about dice rolls
-
-    Returns:
-        dict: data about dice rolls
-    """
-    if result_data["result"] == int(die):
-        result_data["maximums"] += 1
-        result_data["rolls"].append(f"**{result_data['result']}**")
-    else:
-        if result_data["result"] == 1:
-            result_data["minimums"] += 1
-        result_data["rolls"].append(f"{result_data['result']}")
-
-    return result_data
+        Args:
+            die (str): the dice that was rolled
+        """
+        if self.roll == int(die):
+            self.data["maximums"] += 1
+            self.data["rolls"].append(f"**{self.roll}**")
+        else:
+            if self.roll == 1:
+                self.data["minimums"] += 1
+            self.data["rolls"].append(f"{self.roll}")
 
 
 # Code for coin flips

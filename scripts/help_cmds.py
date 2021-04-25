@@ -57,7 +57,17 @@ def command(command, author, prefix):
     command_info = {
         "roll": {
             "title": ":game_die: Dice Rolls",
-            "description": "Takes a dice expression solves it",
+            "description": (
+                "Takes a dice expression solves it\n\n**You can have the following in the"
+                " expression:**\n• `<number>` - If only a number is inputted the bot takes"
+                " it as a singular roll, if part of an larger expresion it's considered as"
+                " a normal number.\n• `<number of times to roll>d<die number>` - Rolls the"
+                " die as many times as specified. The number of times can be left blank to"
+                " roll only once.\n• `<binary>` or `b` - Returns a binary value: 0 or"
+                " 1\n\n**The above can be linked to form an expression using:**\n• Addition (+),"
+                " subtraction (-), and multiplication (*)\n• Brackets (): they work in the same"
+                " way brackets work in maths"
+            ),
             "aliases": ["roll", "r"],
             "variables": " [dice expression]",
         },

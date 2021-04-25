@@ -11,30 +11,31 @@ The default prefix is `$`.
 * re
 * Discord.py
 
-## Features
+## Dice Rolls
 
-### Dice Rolls
+`$roll <dice roll expression>` or `$r <dice roll expression>`
 
-`$r<Your dice rolls>`
+This command uses Python's `random` module to roll the dice. It has support for the following inputs:
 
-This command uses Python's `random` module to roll the dice. The command accepts several different inputs:
+* `<number>` - Can be used as a normal number in a larger expression Note: If only a number is inputted and nothing else, the bot will take it as a singular die roll
+* `<number of times to roll>d<die number>` - Rolls the die as many times as specified. It can be left blank to roll the dice once.
+* `<binary>` or `b` - Returns a binary value: 0 or 1
 
-* `<die number>` - Rolls the die once
-* `d<die number>` - Rolls the die once (Same as the above command)
-* `<number of times to roll>d<die number>` - Rolls the die as many times as specified
-* `<number>` - Just a number.
-* The bot also has support for parenthesis.
-* The above can be linked together with +,-, and *.
+The above can be linked to form an expression using:
 
-### Timetable
+* Addition (+), subtraction (-), and multiplication (*)
+* Brackets (): they work in the same way brackets work in maths
 
-If there is a channel dedicated for a timetable the bot will take messages from that and do several things.
+## Timetable
 
-* React with the correct reactions so users can easily click instead of searching though the list.
+A decicated timetable channel can be set up and the bot will do the following:
+
+* React with ✅ and ❎ so users can easily click them instead of searching though the list.
 
 ## Other Commands
 
 * `$help`: Shows a help message.
 * `$coin`: Flips a coin and shows you the result.
+* `$8ball`: Ask a Magic 8-Ball your question and get an answer.
 * `$twenty`: Rolls a d20 die with a remarkable chance to get a natural 20.
 * `$one`: Just rolls a die with a very high chance of getting a 1. That's it.
