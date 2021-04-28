@@ -10,7 +10,7 @@ import re
 
 
 def roll(expression):
-    """Acts as a singular function to call the
+    """Acts as a singular function to call the class Dice
 
     Args:
         expression (str): the expression with dice rolls
@@ -21,8 +21,8 @@ def roll(expression):
     dice = Dice(expression)
     math_expression, result_data = dice.solve()
 
-    if not math_expression.isalpha():
-        result_data["result"] = eval(math_expression)
+    if not math_expression.islower():
+        result_data["result"] = eval(math_expression, {"__builtins__": None}, {})
         return result_data
 
 
@@ -63,19 +63,47 @@ class Dice:
             dict: data about dice rolls
         """
 
-        # Splits string along: +, -, *, (, )
-        exp_list = re.split("(\\+|\\-|\\*|\\(|\\))", self.expression)
+        # Splits string along: +, -, *, /, (, ), [, ]
+        exp_list = re.split("(\\+|\\-|\\*|\\/|\\(|\\)|\\[|\\])", self.expression)
+
         for i in range(0, len(exp_list)):
             if "d" in exp_list[i]:
                 self.dice(exp_list[i])
                 exp_list[i] = str(self.total_roll)
 
-            elif exp_list[i] == "b":
-                self.dice("d1", 0)
-                exp_list[i] = str(self.total_roll)
+            elif "b" in exp_list[i]:
+                self.dice(exp_list[i].replace("b", "d1"), 0)
+                exp_list[i] = f"{self.total_roll}"
+            elif exp_list[i] == "[":
+                rbrackets = 1
+                rexpression = i
 
-            # Adds "*" before each "("
-            if exp_list[i] == "(" and exp_list[i - 1][-1:].isdigit():
+                while rbrackets > 0:
+                    rexpression += 1
+                    if exp_list[rexpression] == "[":
+                        rbrackets += 1
+                    elif exp_list[rexpression] == "]":
+                        rbrackets -= 1
+                count = 0
+
+                for _ in range(0, int(exp_list[i - 1])):
+                    results = roll("".join(exp_list[i+1:rexpression]))
+
+                    count += int(results["result"])
+                    self.data["rolls"].extend(results["rolls"])
+                    self.data["maximums"] += results["maximums"]
+                    self.data["minimums"] += results["minimums"]
+
+                for ii in range(i - 1, rexpression + 1):
+                    exp_list[ii] = ""
+                exp_list[i] = str(count)
+
+            # Adds "*" before each "(" except if it's the first character
+            elif (
+                i != 1
+                and exp_list[i] == "("
+                and exp_list[i - 1] not in ["+", "-", "*", "/"]
+            ):
                 exp_list[i] = "*" + exp_list[i]
 
         math_expression = "".join(exp_list)

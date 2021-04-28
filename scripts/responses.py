@@ -128,6 +128,33 @@ def eightball(author, question, result):
     return embed
 
 
+def info(client, author):
+    embed = discord.Embed(
+        title=":information_source: Information",
+        description="Information about this bot.",
+        color=embed_colour,
+    )
+    embed.set_thumbnail(url=client.user.avatar_url)
+    embed.add_field(name=":arrows_counterclockwise: Version", value="Version 0.1.4")
+    embed.add_field(
+        name=":link: Links",
+        value="[Github repository](https://github.com/TheBobTheBlob/Bob-the-Bot/)",
+    )
+    embed.add_field(
+        name=":new: Latest Update",
+        value=(
+            "**Added:**\n• Info command\n• Division and repeatable brackets"
+            " support for dice\n• More than one `binary` command can be run at once"
+            "\n• More help commands\n\n**Fixed:**\n"
+            "• Normal brackets next to each other would not multiply"
+        ),
+        inline=False,
+    )
+    embed.set_footer(text=f"Info command run by: {author.display_name}")
+
+    return embed
+
+
 def twenty():
     """Returns the pre-written response.
 

@@ -23,21 +23,25 @@ def bot(author, prefix):
         value="Commands related to random outputs.\n`roll` `coin` `8ball`",
         inline=False,
     )
+    """
     embed.add_field(
         name=":tada: Party",
         value="[WIP] Configure your D&D party.\n`party` then: `create` `delete` `add` `remove` `nick`",
         inline=False,
     )
+    """
     embed.add_field(
         name=":joystick: Other",
-        value="All other commmands\n`twenty` `one`",
+        value="All other commmands\n`info` `twenty` `one`",
         inline=False,
     )
+    """
     embed.add_field(
         name=":gear: Config",
         value="[WIP] Configure Bob the Bot.\n`config` then: `prefix` `timetable` `welcomemsg` `byemsg`",
         inline=False,
     )
+    """
     embed.set_footer(text=f"Help command run by: {author.display_name}")
 
     return embed
@@ -63,10 +67,11 @@ def command(command, author, prefix):
                 " it as a singular roll, if part of an larger expresion it's considered as"
                 " a normal number.\n• `<number of times to roll>d<die number>` - Rolls the"
                 " die as many times as specified. The number of times can be left blank to"
-                " roll only once.\n• `<binary>` or `b` - Returns a binary value: 0 or"
+                " roll only once.\n• `binary` or `b` - Returns a binary value: 0 or"
                 " 1\n\n**The above can be linked to form an expression using:**\n• Addition (+),"
-                " subtraction (-), and multiplication (*)\n• Brackets (): they work in the same"
-                " way brackets work in maths"
+                " subtraction (-), multiplication (*), and division (/)\n• Brackets (): they work"
+                " in the same way brackets work in maths\n• Repeating brackets []: `<number>[<expression>]"
+                " It repeats the expression as many times as given"
             ),
             "aliases": ["roll", "r"],
             "variables": " [dice expression]",
@@ -83,7 +88,14 @@ def command(command, author, prefix):
             "aliases": ["8ball"],
             "variables": " [question]",
         },
+        "info": {
+            "title": ":information_source: Information",
+            "description": "Gives information about this bot.",
+            "aliases": ["info", "information"],
+            "variables": "",
+        },
     }
+
     aliases = []
     for command_dict in command_info.values():
         aliases.extend(command_dict["aliases"])
@@ -105,7 +117,7 @@ def command(command, author, prefix):
         embed.add_field(name="Aliases", value=aliases, inline=False)
     else:
         embed = discord.Embed(
-            title="Help | Unknown Comamnd",
+            title="Help | Unknown Command",
             description="The command you entered does not exist or does not have a help screen",
             color=embed_colour,
         )

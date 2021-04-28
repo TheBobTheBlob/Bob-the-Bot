@@ -13,8 +13,11 @@ from scripts import responses
 from scripts import random_cmds
 from scripts import help_cmds
 
+
 prefix = "$"
-client = discord.Client()
+
+activity = discord.Activity(name=f"{prefix}help", type=discord.ActivityType.listening)
+client = discord.Client(activity=activity)
 
 
 @client.event
@@ -76,6 +79,10 @@ async def on_message(message):
         await message.channel.send(
             embed=responses.eightball(message.author, question, result)
         )
+
+    # info command
+    elif content == "info" or content == "information":
+        await message.channel.send(embed=responses.info(client, message.author))
 
     # twenty command
     elif content == "twenty":
