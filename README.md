@@ -1,17 +1,23 @@
 # Bob the Bot
 
-A Discord bot written in Python. It's mostly related to D&D and other roleplaying games but also has some other stuff for fun.
+Bob the Bot is a Discord bot that specialises in commands related to table-top roleplaying games while also having a few more general commands.
 
 The default prefix is `$`.
 
+## Feature Overview
+
+* A roll command that's build to be as forgiving as possible. The focus should be on the game, not on typing commands correctly.
+* The ability to react with ✅ and ❎ to messages in a channel in order to facilitate easy voting.
+
 ## Requirements
 
-* os
-* random
-* re
-* discord.py
+* Python 3.6+
+* Standard library: `os`, `random`, `re`
+* Other: `discord.py`
 
-## Dice Rolls
+## All Features
+
+### Dice Rolls
 
 `$roll <dice roll expression>` or `$r <dice roll expression>`
 
@@ -27,13 +33,13 @@ The above can be linked to form an expression using:
 * Brackets (): They work in the same way brackets work in maths
 * Repeating brackets []: `<number>[<expression>]` It repeats the inner expression as many times as given
 
-## Timetable
+### Timetable
 
-A decicated timetable channel can be set up and the bot will do the following:
+A dedicated timetable channel can be set up and the bot will do the following:
 
 * React with ✅ and ❎ so users can easily click them instead of searching though the list.
 
-## Other Commands
+### Other Commands
 
 * `$help`: Shows a help message.
 * `$coin`: Flips a coin and shows you the result.
